@@ -39,8 +39,8 @@ public class LockbaleImageView extends View {
         }
         paint.setStyle(Paint.Style.FILL);
         canvas.drawColor(Color.WHITE);
-        canvas.drawBitmap(bitmap,0,0,paint);
         paint.setColor(Color.BLACK);
+        canvas.drawBitmap(bitmap,0,0,paint);
         canvas.drawRect(new RectF(0,2*h/3,w,h),paint);
         imageLock.draw(canvas);
         lockColorFilter.draw(canvas);
@@ -55,6 +55,9 @@ public class LockbaleImageView extends View {
     public void update(float factor) {
         if(imageLock != null) {
             imageLock.update(factor);
+        }
+        if(lockColorFilter != null) {
+            lockColorFilter.update(factor);
         }
         postInvalidate();
     }
@@ -124,15 +127,16 @@ public class LockbaleImageView extends View {
     private class LockColorFilter {
         private float filterH = 0;
         public LockColorFilter() {
-            filterH = -2*h/3;
+            filterH = -(2*h/3+h/10);
         }
         public void draw(Canvas canvas) {
+            paint.setStyle(Paint.Style.FILL);
             int r = Color.red(color),g = Color.green(color),b = Color.blue(color);
             paint.setColor(Color.argb(150,r,g,b));
             canvas.drawRect(new RectF(0,filterH,w,filterH+2*h/3),paint);
         }
         public void update(float factor) {
-            filterH = -2*h/3*(1-factor);
+            filterH = -(2*h/3+h/10)*(1-factor);
         }
     }
 }
