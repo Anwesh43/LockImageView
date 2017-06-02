@@ -1,5 +1,8 @@
 package com.anwesome.ui.lockableimageview;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -18,6 +21,7 @@ public class LockbaleImageView extends View {
     private int w,h,time = 0;
     private Bitmap bitmap;
     private ImageLock imageLock;
+    private AnimationHandler animationHandler;
     public LockbaleImageView(Context context, Bitmap bitmap) {
         super(context);
         this.bitmap = bitmap;
@@ -28,6 +32,7 @@ public class LockbaleImageView extends View {
             h = canvas.getHeight();
             bitmap = Bitmap.createScaledBitmap(bitmap,w,2*h/3,true);
             imageLock = new ImageLock();
+            animationHandler = new AnimationHandler();
         }
         paint.setStyle(Paint.Style.FILL);
         canvas.drawColor(Color.WHITE);
@@ -39,7 +44,7 @@ public class LockbaleImageView extends View {
     }
     public boolean onTouchEvent(MotionEvent event) {
         if(event.getAction() == MotionEvent.ACTION_DOWN && imageLock!=null && imageLock.handleTap(event.getX(),event.getY())) {
-
+            animationHandler.start();
         }
         return true;
     }
@@ -72,6 +77,40 @@ public class LockbaleImageView extends View {
         }
         public boolean handleTap(float x,float y) {
             return x>=this.x-size && x<=this.x+size && y>=this.y-size && y<=this.y+size;
+        }
+    }
+    private class AnimationHandler extends AnimatorListenerAdapter implements ValueAnimator.AnimatorUpdateListener{
+        private ValueAnimator startAnim = ValueAnimator.ofFloat(0,1),endAnim = ValueAnimator.ofFloat(1,0);
+        private int dir = 0;
+        private boolean isAnimated = false;
+        private AnimationHandler() {
+            startAnim.setDuration(500);
+            endAnim.setDuration(500);
+            startAnim.addUpdateListener(this);
+            endAnim.addUpdateListener(this);
+            startAnim.addListener(this);
+            endAnim.addListener(this);
+        }
+        public void start() {
+            if(!isAnimated) {
+                if(dir == 0) {
+                    startAnim.start();
+                }
+                else {
+                    endAnim.start();
+                }
+                isAnimated = true;
+            }
+        }
+        public void onAnimationUpdate(ValueAnimator valueAnimator) {
+            if(isAnimated) {
+                update((float)valueAnimator.getAnimatedValue());
+            }
+        }
+        public void onAnimationEnd(Animator animator) {
+            if(isAnimated) {
+                isAnimated = false;
+            }
         }
     }
 }
