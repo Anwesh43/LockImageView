@@ -17,6 +17,7 @@ public class LockbaleImageView extends View {
     private Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private int w,h,time = 0;
     private Bitmap bitmap;
+    private ImageLock imageLock;
     public LockbaleImageView(Context context, Bitmap bitmap) {
         super(context);
         this.bitmap = bitmap;
@@ -26,19 +27,26 @@ public class LockbaleImageView extends View {
             w = canvas.getWidth();
             h = canvas.getHeight();
             bitmap = Bitmap.createScaledBitmap(bitmap,w,2*h/3,true);
+            imageLock = new ImageLock();
         }
         paint.setStyle(Paint.Style.FILL);
         canvas.drawColor(Color.WHITE);
         canvas.drawBitmap(bitmap,0,0,paint);
         paint.setColor(Color.BLACK);
         canvas.drawRect(new RectF(0,2*h/3,w,h),paint);
+        imageLock.draw(canvas);
         time++;
     }
     public boolean onTouchEvent(MotionEvent event) {
-        if(event.getAction() == MotionEvent.ACTION_DOWN) {
+        if(event.getAction() == MotionEvent.ACTION_DOWN && imageLock!=null && imageLock.handleTap(event.getX(),event.getY())) {
 
         }
         return true;
+    }
+    public void update(float factor) {
+        if(imageLock != null) {
+            imageLock.update(factor);
+        }
     }
     private class ImageLock {
         private float x,y,size,deg = 0;
