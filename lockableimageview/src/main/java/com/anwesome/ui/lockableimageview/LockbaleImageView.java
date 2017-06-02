@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.RectF;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -24,10 +25,13 @@ public class LockbaleImageView extends View {
         if(time == 0) {
             w = canvas.getWidth();
             h = canvas.getHeight();
-            bitmap = Bitmap.createScaledBitmap(bitmap,w,w/2,true);
+            bitmap = Bitmap.createScaledBitmap(bitmap,w,2*h/3,true);
         }
+        paint.setStyle(Paint.Style.FILL);
         canvas.drawColor(Color.WHITE);
         canvas.drawBitmap(bitmap,0,0,paint);
+        paint.setColor(Color.BLACK);
+        canvas.drawRect(new RectF(0,2*h/3,w,h),paint);
         time++;
     }
     public boolean onTouchEvent(MotionEvent event) {
@@ -35,5 +39,31 @@ public class LockbaleImageView extends View {
 
         }
         return true;
+    }
+    private class ImageLock {
+        private float x,y,size,deg = 0;
+        public ImageLock() {
+            x = w/2;
+            y = 5*h/6;
+            size = w/10;
+        }
+        public void draw(Canvas canvas) {
+            paint.setColor(Color.WHITE);
+            paint.setStyle(Paint.Style.STROKE);
+            paint.setStrokeWidth(w/30);
+            canvas.drawRoundRect(new RectF(x-size,y-size,x+size,y+size),w/15,w/15,paint);
+            paint.setStrokeWidth(w/20);
+            float r = 2*size/3;
+            canvas.save();
+            canvas.translate(x-r,y);
+            canvas.drawArc(new RectF(0,-r,2*r,r),180,180,true,paint);
+            canvas.restore();
+        }
+        public void update(float factor) {
+            deg = 45*factor;
+        }
+        public boolean handleTap(float x,float y) {
+            return x>=this.x-size && x<=this.x+size && y>=this.y-size && y<=this.y+size;
+        }
     }
 }
