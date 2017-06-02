@@ -32,7 +32,14 @@ public class LockbaleImageView extends View {
         if(time == 0) {
             w = canvas.getWidth();
             h = canvas.getHeight();
-            bitmap = Bitmap.createScaledBitmap(bitmap,w,2*h/3,true);
+            if(Constants.stringBitmapMap.get(bitmap) != null) {
+                bitmap = Constants.stringBitmapMap.get(bitmap);
+            }
+            else {
+                Bitmap newBitmap = Bitmap.createScaledBitmap(bitmap, w, 2 * h / 3, true);
+                Constants.stringBitmapMap.put(bitmap,newBitmap);
+                bitmap = newBitmap;
+            }
             imageLock = new ImageLock();
             animationHandler = new AnimationHandler();
             lockColorFilter = new LockColorFilter();

@@ -70,7 +70,7 @@ public class LockableImageViewList {
             int x = 0,y = h/30;
             for(int i=0;i<getChildCount();i++) {
                 View child = getChildAt(i);
-                child.layout(x,y,x+child.getMeasuredHeight(),y+getMeasuredHeight());
+                child.layout(x,y,x+child.getMeasuredWidth(),y+getMeasuredHeight());
                 y += (child.getMeasuredHeight()+h/30);
             }
         }
