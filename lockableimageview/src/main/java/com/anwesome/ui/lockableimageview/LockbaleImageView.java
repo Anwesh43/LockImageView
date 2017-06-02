@@ -21,6 +21,8 @@ public class LockbaleImageView extends View {
     private int w,h,time = 0;
     private Bitmap bitmap;
     private ImageLock imageLock;
+    private LockColorFilter lockColorFilter;
+    private int color = Color.parseColor("#00BCD4");
     private AnimationHandler animationHandler;
     public LockbaleImageView(Context context, Bitmap bitmap) {
         super(context);
@@ -33,6 +35,7 @@ public class LockbaleImageView extends View {
             bitmap = Bitmap.createScaledBitmap(bitmap,w,2*h/3,true);
             imageLock = new ImageLock();
             animationHandler = new AnimationHandler();
+            lockColorFilter = new LockColorFilter();
         }
         paint.setStyle(Paint.Style.FILL);
         canvas.drawColor(Color.WHITE);
@@ -40,6 +43,7 @@ public class LockbaleImageView extends View {
         paint.setColor(Color.BLACK);
         canvas.drawRect(new RectF(0,2*h/3,w,h),paint);
         imageLock.draw(canvas);
+        lockColorFilter.draw(canvas);
         time++;
     }
     public boolean onTouchEvent(MotionEvent event) {
@@ -115,6 +119,20 @@ public class LockbaleImageView extends View {
                 dir = dir == 0?1:0;
                 isAnimated = false;
             }
+        }
+    }
+    private class LockColorFilter {
+        private float filterH = 0;
+        public LockColorFilter() {
+            filterH = -2*h/3;
+        }
+        public void draw(Canvas canvas) {
+            int r = Color.red(color),g = Color.green(color),b = Color.blue(color);
+            paint.setColor(Color.argb(150,r,g,b));
+            canvas.drawRect(new RectF(0,filterH,w,filterH+2*h/3),paint);
+        }
+        public void update(float factor) {
+            filterH = -2*h/3*(1-factor);
         }
     }
 }
