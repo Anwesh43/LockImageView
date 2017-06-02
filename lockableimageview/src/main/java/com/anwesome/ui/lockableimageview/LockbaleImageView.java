@@ -52,31 +52,34 @@ public class LockbaleImageView extends View {
         if(imageLock != null) {
             imageLock.update(factor);
         }
+        postInvalidate();
     }
     private class ImageLock {
         private float x,y,size,deg = 0;
         public ImageLock() {
             x = w/2;
-            y = 5*h/6;
+            y = 5*h/6+h/15;
             size = w/10;
         }
         public void draw(Canvas canvas) {
             paint.setColor(Color.WHITE);
             paint.setStyle(Paint.Style.STROKE);
-            paint.setStrokeWidth(w/30);
-            canvas.drawRoundRect(new RectF(x-size,y-size,x+size,y+size),w/15,w/15,paint);
-            paint.setStrokeWidth(w/20);
-            float r = 2*size/3;
+            paint.setStrokeWidth(w/60);
+            float rectSize = 3*size/4;
+            canvas.drawRoundRect(new RectF(x-rectSize,y-rectSize,x+rectSize,y+rectSize),w/30,w/30,paint);
+            paint.setStrokeWidth(w/40);
+            float r = size/2;
             canvas.save();
-            canvas.translate(x-r,y);
-            canvas.drawArc(new RectF(0,-r,2*r,r),180,180,true,paint);
+            canvas.translate(x-r,y-rectSize);
+            canvas.rotate(deg);
+            canvas.drawArc(new RectF(0,-1.25f*r,2*r,1.25f*r),180,180,false,paint);
             canvas.restore();
         }
         public void update(float factor) {
-            deg = 45*factor;
+            deg = -60*factor;
         }
         public boolean handleTap(float x,float y) {
-            return x>=this.x-size && x<=this.x+size && y>=this.y-size && y<=this.y+size;
+            return x>=this.x-size && x<=this.x+size && y>=this.y-5*size/3 && y<=this.y+size;
         }
     }
     private class AnimationHandler extends AnimatorListenerAdapter implements ValueAnimator.AnimatorUpdateListener{
@@ -109,6 +112,7 @@ public class LockbaleImageView extends View {
         }
         public void onAnimationEnd(Animator animator) {
             if(isAnimated) {
+                dir = dir == 0?1:0;
                 isAnimated = false;
             }
         }
